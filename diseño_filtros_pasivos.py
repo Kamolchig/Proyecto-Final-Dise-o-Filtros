@@ -1,18 +1,4 @@
-# Descripción: Este script automatiza el diseño de filtros pasivos (paso bajo, paso alto y paso banda)
-# utilizando componentes comerciales (resistencias, capacitores e inductores). 
-# Las resistencias y capacitores son de Steren jeje
-# Itera sobre las combinaciones posibles de componentes y encuentra la mejor combinación que cumpla con 
-# las especificaciones de frecuencia de corte deseadas.
-
-#    Configura las especificaciones del filtro antes de ejecutar el script:
-
-#    frecuencia_corte_bajo = 60  # Frecuencia de corte para paso bajo en Hz
-#    frecuencia_corte_alto = 3000  # Frecuencia de corte para paso alto en Hz
-#    frecuencia_corte_paso_banda_bajo = 200  # Frecuencia de corte baja para paso banda en Hz
-#    frecuencia_corte_paso_banda_alto = 600  # Frecuencia de corte alta para paso banda en Hz
-#    tipo_filtro = 'paso_bajo'  # Tipo de filtro ('paso_bajo', 'paso_alto', 'paso_banda') #Especificar el tipo
-
-
+# Kamila G
 # Descripción: Este script automatiza el diseño de filtros pasivos (paso bajo, paso alto y paso banda)
 # utilizando componentes comerciales (resistencias, capacitores e inductores). 
 # Las resistencias y capacitores son de Steren jeje
@@ -35,7 +21,7 @@ from scipy.signal import bode, TransferFunction
 # Cargar datos de componentes
 resistencias = pd.read_csv('resistencias.csv')['value'].values  # Lista de resistencias de steren en ohmios
 capacitores = pd.read_csv('capacitores.csv')  # Lista de capacitores de steren con sus valores en faradios, tipo y tensión nominal en voltios
-inductores = pd.read_csv('inductores_comerciales.csv')['value'].values  # Lista de inductores comerciales con sus valores en henrios y tensión nominal en voltios (estos no son de steren sopas)
+inductores = pd.read_csv('inductores_comerciales.csv')['value'].values  # Lista de inductores comerciales con sus valores en henrios y tensión nominal en voltios
 
 # Definir especificaciones del filtro
 frecuencia_corte_bajo = 60  # Frecuencia de corte para paso bajo en Hz
@@ -112,7 +98,7 @@ if mejor_combinacion:
         plt.subplot(2, 1, 2)
         plt.semilogx(w, phase)  # Bode phase plot
         plt.ylabel('Fase (grados)')
-        plt.xlabel('Frecuencia (rad/s)')
+        plt.xlabel(f'Frecuencia (rad/s), Frecuencia de corte: {fc:.2f} Hz')
         plt.grid(which='both', axis='both')
         plt.show()
     
@@ -142,7 +128,7 @@ if mejor_combinacion:
         plt.subplot(2, 1, 2)
         plt.semilogx(w, phase)  # Bode phase plot
         plt.ylabel('Fase (grados)')
-        plt.xlabel('Frecuencia (rad/s)')
+        plt.xlabel(f'Frecuencia (rad/s), Frecuencia de resonancia: {f_resonancia:.2f} Hz')
         plt.grid(which='both', axis='both')
         plt.show()
 else:
