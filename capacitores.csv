@@ -1,0 +1,35 @@
+value,type,voltage
+22e-12,cerámico,500
+1e-9,cerámico,500
+4.7e-9,cerámico,500
+10e-9,cerámico,50
+22e-9,cerámico,50
+100e-9,cerámico,50
+220e-9,cerámico,16
+10e-9,políester metalizado,250
+470e-9,políester metalizado,250
+100e-9,políester metalizado,250
+220e-9,políester metalizado,250
+1e-6,políester metalizado,250
+47e-9,políester metalizado,250
+1e-3,electrolítico,16
+1e-3,electrolítico,25
+1e-3,electrolítico,50
+100e-6,electrolítico,25
+100e-6,electrolítico,63
+10e-6,electrolítico,100
+10e-6,electrolítico,63
+1e-6,electrolítico,63
+2.2e-6,electrolítico,63
+2.2e-3,electrolítico,16
+2.2e-3,electrolítico,25
+2.2e-3,electrolítico,50
+220e-6,electrolítico,25
+220e-6,electrolítico,50
+22e-6,electrolítico,50
+4.7e-6,electrolítico,63
+470e-6,electrolítico,16
+470e-6,electrolítico,50
+47e-6,electrolítico,25
+47e-6,electrolítico,50
+47e-6,electrolítico,63
