@@ -24,10 +24,10 @@ capacitores = pd.read_csv('capacitores.csv')  # Lista de capacitores de steren c
 inductores = pd.read_csv('inductores_comerciales.csv')['value'].values  # Lista de inductores comerciales con sus valores en henrios y tensión nominal en voltios
 
 # Definir especificaciones del filtro
-frecuencia_corte_bajo = 60  # Frecuencia de corte para paso bajo en Hz
+frecuencia_corte_bajo = 200  # Frecuencia de corte para paso bajo en Hz
 frecuencia_corte_alto = 3000  # Frecuencia de corte para paso alto en Hz
-frecuencia_corte_paso_banda_bajo = 200  # Frecuencia de corte baja para paso banda en Hz
-frecuencia_corte_paso_banda_alto = 600  # Frecuencia de corte alta para paso banda en Hz
+frecuencia_corte_paso_banda_bajo = 3000  # Frecuencia de corte baja para paso banda en Hz
+frecuencia_corte_paso_banda_alto = 20000  # Frecuencia de corte alta para paso banda en Hz
 tipo_filtro = 'paso_bajo'  # Tipo de filtro ('paso_bajo', 'paso_alto', 'paso_banda')
 
 # Funciones para calcular las frecuencias de corte
