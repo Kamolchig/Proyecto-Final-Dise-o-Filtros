@@ -3,7 +3,7 @@
 ## Descripción
 Este script automatiza el diseño de filtros pasivos (paso bajo, paso alto y paso banda) utilizando componentes comerciales (resistencias, capacitores e inductores). Las resistencias y capacitores son de Steren.
 
-El script itera sobre las combinaciones posibles de componentes y encuentra la mejor combinación que cumpla con las especificaciones de frecuencia de corte deseadas.
+El script itera sobre las combinaciones posibles de componentes y encuentra la mejor combinación que cumpla con las especificaciones de frecuencia de corte deseadas. Además, genera y muestra los diagramas de Bode para el filtro diseñado.
 
 ## Instrucciones
 
