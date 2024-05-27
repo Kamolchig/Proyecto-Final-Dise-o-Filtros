@@ -1,3 +1,18 @@
+
+# Kamila G
+# Descripción: Este script automatiza el diseño de filtros pasivos (paso bajo, paso alto y paso banda)
+# utilizando componentes comerciales (resistencias, capacitores e inductores). 
+# Las resistencias y capacitores son de Steren jeje
+# Itera sobre las combinaciones posibles de componentes y encuentra la mejor combinación que cumpla con 
+# las especificaciones de frecuencia de corte deseadas.
+
+#    Configura las especificaciones del filtro antes de ejecutar el script:
+
+#    frecuencia_corte_bajo = 60  # Frecuencia de corte para paso bajo en Hz
+#    frecuencia_corte_alto = 3000  # Frecuencia de corte para paso alto en Hz
+#    frecuencia_corte_paso_banda_bajo = 200  # Frecuencia de corte baja para paso banda en Hz
+#    frecuencia_corte_paso_banda_alto = 600  # Frecuencia de corte alta para paso banda en Hz
+#    tipo_filtro = 'paso_bajo'  # Tipo de filtro ('paso_bajo', 'paso_alto', 'paso_banda') #Especificar el tipo
 # Kamila G
 # Descripción: Este script automatiza el diseño de filtros pasivos (paso bajo, paso alto y paso banda)
 # utilizando componentes comerciales (resistencias, capacitores e inductores). 
@@ -73,8 +88,8 @@ def graficar_respuesta_frecuencia_plotly(w, mag, phase, tipo_filtro):
 
 # Código principal
 resistencias, capacitores, inductores = cargar_componentes()
-tipo_filtro = 'paso_bajo'  # Ajusta esto según necesidad
-frecuencias_corte = [60,100]  # Ajusta las frecuencias de corte según el tipo de filtro
+tipo_filtro = 'paso_alto'  # Ajusta esto según necesidad
+frecuencias_corte = [20000,60]  # Ajusta las frecuencias de corte según el tipo de filtro
 mejor_combinacion = buscar_mejor_combinacion(resistencias, capacitores, inductores, tipo_filtro, frecuencias_corte)
 
 if mejor_combinacion:
