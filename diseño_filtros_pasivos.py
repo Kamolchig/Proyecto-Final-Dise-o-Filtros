@@ -6,12 +6,10 @@ import pandas as pd
 import numpy as np
 from scipy.signal import bode, TransferFunction
 import plotly.graph_objects as go
+import tkinter as tk
+from tkinter import ttk, messagebox
 
-
-tipo_filtro = 'paso_banda'  # Ajusta esto según necesidad # Tipo de filtro ('paso_bajo', 'paso_alto', 'paso_banda') #Especificar el tipo
-frecuencias_corte = [60,200]  # Ajusta las frecuencias de corte según el tipo de filtro, filtro bajo o alto tomara la primera cifra de la matriz, solo sies aso banda tomara ambas
-
-
+# Funciones de cálculo y búsqueda de componentes
 def cargar_componentes():
     resistencias = pd.read_csv('resistencias.csv')['value'].values
     capacitores = pd.read_csv('capacitores.csv')
@@ -65,30 +63,62 @@ def graficar_respuesta_frecuencia_plotly(w, mag, phase, tipo_filtro):
                       xaxis_type='log', legend_title_text='Variable')
     fig.show()
 
-# Código principal
-resistencias, capacitores, inductores = cargar_componentes()
+# Interfaz gráfica de usuario
+def calcular_filtro():
+    tipo_filtro = filtro_var.get()
+    frecuencias_corte = [int(fc1_entry.get())]
+    if tipo_filtro == 'paso_banda':
+        frecuencias_corte.append(int(fc2_entry.get()))
+    else:
+        frecuencias_corte.append(None)
+    
+    resistencias, capacitores, inductores = cargar_componentes()
+    mejor_combinacion = buscar_mejor_combinacion(resistencias, capacitores, inductores, tipo_filtro, frecuencias_corte)
 
+    if mejor_combinacion:
+        if tipo_filtro in ['paso_bajo', 'paso_alto']:
+            R, C, fc, tipo_capacitor, voltage_capacitor = mejor_combinacion
+            result_label.config(text=f"Mejor combinación para un filtro {tipo_filtro} con frecuencia de corte {fc:.2f} Hz:\n"
+                                     f"Resistencia: {R} ohmios, Capacitor: {C} faradios ({tipo_capacitor}, {voltage_capacitor}V)")
+            if tipo_filtro == 'paso_bajo':
+                num = [1]
+            else:  # Paso Alto
+                num = [R * C, 0]
+            den = [R * C, 1]
+        elif tipo_filtro == 'paso_banda':
+            R, L, C, f_resonancia, ancho_banda, tipo_capacitor, voltage_capacitor = mejor_combinacion
+            result_label.config(text=f"Mejor combinación para un filtro paso banda con frecuencias de corte {frecuencias_corte[0]} Hz a {frecuencias_corte[1]} Hz:\n"
+                                     f"Resistencia: {R} ohmios, Inductor: {L} henrios, Capacitor: {C} faradios ({tipo_capacitor}, {voltage_capacitor}V)")
+            num = [1 / L, 0]
+            den = [1, R / L, 1 / (L * C)]
+        system = TransferFunction(num, den)
+        w, mag, phase = bode(system)
+        graficar_respuesta_frecuencia_plotly(w, mag, phase, tipo_filtro)
+    else:
+        messagebox.showerror("Error", "No se encontró una combinación adecuada.")
 
-mejor_combinacion = buscar_mejor_combinacion(resistencias, capacitores, inductores, tipo_filtro, frecuencias_corte)
+# Configuración de la ventana principal de la GUI
+root = tk.Tk()
+root.title("Diseño de Filtros Pasivos")
 
-if mejor_combinacion:
-    if tipo_filtro in ['paso_bajo', 'paso_alto']:
-        R, C, fc, tipo_capacitor, voltage_capacitor = mejor_combinacion
-        print(f"Mejor combinación para un filtro {tipo_filtro} con frecuencia de corte {fc} Hz:")
-        print(f"Resistencia: {R} ohmios, Capacitor: {C} faradios ({tipo_capacitor}, {voltage_capacitor}V)")
-        if tipo_filtro == 'paso_bajo':
-            num = [1]
-        else:  # Paso Alto
-            num = [R * C, 0]
-        den = [R * C, 1]
-    elif tipo_filtro == 'paso_banda':
-        R, L, C, f_resonancia, ancho_banda, tipo_capacitor, voltage_capacitor = mejor_combinacion
-        print(f"Mejor combinación para un filtro paso banda con frecuencias de corte {frecuencias_corte[0]} Hz a {frecuencias_corte[1]} Hz:")
-        print(f"Resistencia: {R} ohmios, Inductor: {L} henrios, Capacitor: {C} faradios ({tipo_capacitor}, {voltage_capacitor}V)")
-        num = [1 / L, 0]
-        den = [1, R / L, 1 / (L * C)]
-    system = TransferFunction(num, den)
-    w, mag, phase = bode(system)
-    graficar_respuesta_frecuencia_plotly(w, mag, phase, tipo_filtro)
-else:
-    print("No se encontró una combinación adecuada.")
+filtro_var = tk.StringVar(value='paso_bajo')
+tipos_filtro = [('Paso Bajo', 'paso_bajo'), ('Paso Alto', 'paso_alto'), ('Paso Banda', 'paso_banda')]
+
+tk.Label(root, text="Tipo de Filtro:").grid(row=0, column=0, sticky=tk.W)
+for idx, (text, mode) in enumerate(tipos_filtro):
+    tk.Radiobutton(root, text=text, variable=filtro_var, value=mode).grid(row=0, column=idx+1, sticky=tk.W)
+
+tk.Label(root, text="Frecuencia de Corte 1 (Hz):").grid(row=1, column=0, sticky=tk.W)
+fc1_entry = tk.Entry(root)
+fc1_entry.grid(row=1, column=1)
+
+tk.Label(root, text="Frecuencia de Corte 2 (Hz) (Solo para paso banda):").grid(row=2, column=0, sticky=tk.W)
+fc2_entry = tk.Entry(root)
+fc2_entry.grid(row=2, column=1)
+
+tk.Button(root, text="Calcular Filtro", command=calcular_filtro).grid(row=3, column=0, columnspan=2)
+
+result_label = tk.Label(root, text="", justify=tk.LEFT)
+result_label.grid(row=4, column=0, columnspan=3, sticky=tk.W)
+
+root.mainloop()
