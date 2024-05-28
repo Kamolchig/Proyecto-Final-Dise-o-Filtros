@@ -24,8 +24,9 @@ def calcular_frecuencia_corte_paso_alto(R, C):
 
 def calcular_frecuencia_corte_paso_banda(R, L, C):
     f_resonancia = 1 / (2 * np.pi * np.sqrt(L * C))
-    ancho_banda = R / (2 * np.pi * L)
+    ancho_banda = R / (2 * np.pi * np.sqrt(L * C)) 
     return f_resonancia, ancho_banda
+
 
 def buscar_mejor_combinacion(resistencias, capacitores, inductores, tipo_filtro, frecuencias_corte):
     mejor_combinacion = None
@@ -54,28 +55,35 @@ def buscar_mejor_combinacion(resistencias, capacitores, inductores, tipo_filtro,
     return mejor_combinacion
 
 def graficar_respuesta_frecuencia_plotly(w, mag, phase, tipo_filtro):
+    freq_hz = w / (2 * np.pi)  # Convertir rad/s a Hz
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=w, y=mag, mode='lines', name='Magnitud (dB)'))
-    fig.add_trace(go.Scatter(x=w, y=phase, mode='lines', name='Fase (grados)', yaxis='y2'))
+    fig.add_trace(go.Scatter(x=freq_hz, y=mag, mode='lines', name='Magnitud (dB)'))
+    fig.add_trace(go.Scatter(x=freq_hz, y=phase, mode='lines', name='Fase (grados)', yaxis='y2'))
     fig.update_layout(title=f'Respuesta en Frecuencia del Filtro {tipo_filtro.capitalize()} - Diagrama de Bode',
-                      xaxis=dict(title='Frecuencia (rad/s)'), yaxis=dict(title='Magnitud (dB)'),
+                      xaxis=dict(title='Frecuencia (Hz)'), yaxis=dict(title='Magnitud (dB)'),
                       yaxis2=dict(title='Fase (grados)', overlaying='y', side='right'),
                       xaxis_type='log', legend_title_text='Variable')
     fig.show()
 
+
 # Interfaz gráfica de usuario
+
 
 def calcular_filtro():
     tipo_filtro = filtro_var.get()
-    frecuencias_corte = [int(fc1_entry.get())]
-    if tipo_filtro == 'paso_banda':
-        frecuencias_corte.append(int(fc2_entry.get()))
-    else:
-        frecuencias_corte.append(None)
+    try:
+        frecuencias_corte = [int(fc1_entry.get())]  # Captura la primera frecuencia de corte
+        if tipo_filtro == 'paso_banda':
+            frec_corte2 = int(fc2_entry.get())
+            if frec_corte2 <= frecuencias_corte[0]:
+                raise ValueError("La segunda frecuencia de corte debe ser mayor que la primera.")
+            frecuencias_corte.append(frec_corte2)
+    except ValueError as e:
+        messagebox.showerror("Error de Entrada", str(e))
+        return
     
     resistencias, capacitores, inductores = cargar_componentes()
     mejor_combinacion = buscar_mejor_combinacion(resistencias, capacitores, inductores, tipo_filtro, frecuencias_corte)
-
     if mejor_combinacion:
         if tipo_filtro in ['paso_bajo', 'paso_alto']:
             R, C, fc, tipo_capacitor, voltage_capacitor = mejor_combinacion
@@ -90,10 +98,12 @@ def calcular_filtro():
         elif tipo_filtro == 'paso_banda':
             R, L, C, f_resonancia, ancho_banda, tipo_capacitor, voltage_capacitor = mejor_combinacion
             result_label.config(text=f"Mejor combinación para un filtro paso banda:\n"
-                                     f"Resistencia: {R} ohmios, Inductor: {L} henrios, Capacitor: {C} faradios ({tipo_capacitor}, {voltage_capacitor}V)\n"
-                                     f"Frecuencias de resonancia: {f_resonancia:.2f} Hz, Ancho de banda: {ancho_banda:.2f} Hz")
-            num = [1 / L, 0]
-            den = [1, R / L, 1 / (L * C)]
+                                    f"Resistencia: {R} ohmios, Inductor: {L} henrios, Capacitor: {C} faradios ({tipo_capacitor}, {voltage_capacitor}V)\n"
+                                    f"Frecuencias de resonancia: {f_resonancia:.2f} Hz, Ancho de banda: {ancho_banda:.2f} Hz")
+            # Corrección de la función de transferencia para un filtro pasa banda
+            num = [0, R/L, 0]  # s*(R/L) en el numerador
+            den = [1, R/L, 1/(L*C)]  # s^2 + s*(R/L) + 1/(L*C) en el denominador
+
         system = TransferFunction(num, den)
         w, mag, phase = bode(system)
         graficar_respuesta_frecuencia_plotly(w, mag, phase, tipo_filtro)
