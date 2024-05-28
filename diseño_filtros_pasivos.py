@@ -64,6 +64,7 @@ def graficar_respuesta_frecuencia_plotly(w, mag, phase, tipo_filtro):
     fig.show()
 
 # Interfaz gráfica de usuario
+
 def calcular_filtro():
     tipo_filtro = filtro_var.get()
     frecuencias_corte = [int(fc1_entry.get())]
@@ -78,8 +79,9 @@ def calcular_filtro():
     if mejor_combinacion:
         if tipo_filtro in ['paso_bajo', 'paso_alto']:
             R, C, fc, tipo_capacitor, voltage_capacitor = mejor_combinacion
-            result_label.config(text=f"Mejor combinación para un filtro {tipo_filtro} con frecuencia de corte {fc:.2f} Hz:\n"
-                                     f"Resistencia: {R} ohmios, Capacitor: {C} faradios ({tipo_capacitor}, {voltage_capacitor}V)")
+            result_label.config(text=f"Mejor combinación para un filtro {tipo_filtro}:\n"
+                                     f"Resistencia: {R} ohmios, Capacitor: {C} faradios ({tipo_capacitor}, {voltage_capacitor}V)\n"
+                                     f"Frecuencia de corte calculada: {fc:.2f} Hz")
             if tipo_filtro == 'paso_bajo':
                 num = [1]
             else:  # Paso Alto
@@ -87,8 +89,9 @@ def calcular_filtro():
             den = [R * C, 1]
         elif tipo_filtro == 'paso_banda':
             R, L, C, f_resonancia, ancho_banda, tipo_capacitor, voltage_capacitor = mejor_combinacion
-            result_label.config(text=f"Mejor combinación para un filtro paso banda con frecuencias de corte {frecuencias_corte[0]} Hz a {frecuencias_corte[1]} Hz:\n"
-                                     f"Resistencia: {R} ohmios, Inductor: {L} henrios, Capacitor: {C} faradios ({tipo_capacitor}, {voltage_capacitor}V)")
+            result_label.config(text=f"Mejor combinación para un filtro paso banda:\n"
+                                     f"Resistencia: {R} ohmios, Inductor: {L} henrios, Capacitor: {C} faradios ({tipo_capacitor}, {voltage_capacitor}V)\n"
+                                     f"Frecuencias de resonancia: {f_resonancia:.2f} Hz, Ancho de banda: {ancho_banda:.2f} Hz")
             num = [1 / L, 0]
             den = [1, R / L, 1 / (L * C)]
         system = TransferFunction(num, den)
@@ -96,6 +99,7 @@ def calcular_filtro():
         graficar_respuesta_frecuencia_plotly(w, mag, phase, tipo_filtro)
     else:
         messagebox.showerror("Error", "No se encontró una combinación adecuada.")
+
 
 # Configuración de la ventana principal de la GUI
 root = tk.Tk()
