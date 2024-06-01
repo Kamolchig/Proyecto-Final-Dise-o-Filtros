@@ -1,4 +1,4 @@
-# Powered by Kamila G
+# Powered by Kamila Garcia Zamora t035001
 # Diseño de Filtros Pasivos
 
 Este proyecto automatiza el diseño de filtros pasivos (paso bajo, paso alto y paso banda) utilizando componentes comerciales (resistencias, capacitores e inductores). El script permite seleccionar el tipo de filtro y las frecuencias de corte, y muestra la mejor combinación de componentes junto con la respuesta en frecuencia del filtro en un diagrama de Bode.
